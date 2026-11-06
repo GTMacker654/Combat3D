@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<link rel="icon" type="image/png" href="https://cdn-icons-png.freepik.com/512/15544/15544699.png">
+<title>Combat 3D FPS - Édition Améliorée</title>
+<link rel="stylesheet" href="style.css?v=8">
+</head>
+<body>
+
+<div id="lobby">
+    <div id="lobbyTop"><span class="logo" id="iconLogo"></span></div>
+    <div id="lobbyCoins" class="hudPanel" style="pointer-events:none; margin:10px auto 0; width:fit-content;"><span id="iconCoin2"></span> <span id="lobbyCoinsCount">0</span></div>
+    <div id="modeCards"></div>
+</div>
+
+<div id="hud">
+    <div class="hudPanel">
+        <span id="iconHealth"></span>
+        <span class="bar"><div id="playerHealth"></div></span>
+        <span id="playerHealthNum">100</span>
+    </div>
+</div>
+
+<div id="topRight">
+    <div class="hudPanel"><span id="iconCoin1"></span> <span id="coinsHUD">0</span></div>
+    <div class="hudPanel"><span id="iconTrophy1"></span> <span id="score">0</span></div>
+    <div class="hudPanel" id="enemyCountPanel"><span id="iconEnemy1"></span> <span id="enemyCount">0</span></div>
+    <div class="hudPanel" id="wavePanel" style="display:none"><span id="iconWave1"></span> <span id="wave">1</span></div>
+</div>
+
+<div id="targetPanel">
+    <div class="hudPanel">
+        <span id="iconEnemy2"></span>
+        <span class="bar" id="enemyBar"><div id="enemyHealth"></div></span>
+        <span id="enemyHealthNum">0</span>
+    </div>
+</div>
+
+<div id="waveFlash"></div>
+<div id="crosshair"></div>
+<div id="damageFlash"></div>
+
+<div id="weaponView">
+    <div class="gun"><div id="muzzleFlash"></div></div>
+</div>
+
+<div id="hotbar"></div>
+<div id="lockMessage"><span id="iconMouse"></span></div>
+
+<div id="gameOver">
+    <div class="resultIcon" id="resultIcon"></div>
+    <div class="statLine" id="statLine"></div>
+    <div class="actions">
+        <button class="actionBtn" id="btnRestart"><span id="iconReplay"></span>Rejouer</button>
+        <button class="actionBtn secondary" id="btnLobby"><span id="iconHome"></span>Salon</button>
+    </div>
+</div>
+
+<div id="mobileUI">
+    <div id="joyBase"><div id="joyKnob"></div></div>
+    <div id="touchAimArea"></div>
+    <div id="btnWeapon" class="mobileBtn" style="bottom:220px; right:40px;"></div>
+    <div id="btnAim" class="mobileBtn" style="bottom:220px; right:130px;"></div>
+    <div id="btnView" class="mobileBtn" style="bottom:300px; right:40px;"></div>
+    <div id="btnJump" class="mobileBtn" style="bottom:130px; right:130px;">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 4l-6 6h4v10h4V10h4l-6-6z"/></svg>
+    </div>
+    <div id="btnShoot" class="mobileBtn shootBtn" style="bottom:40px; right:40px;"></div>
+</div>
+
+<div id="btnPause"><span id="iconPause"></span></div>
+
+<div id="pauseMenu">
+    <div class="resultIcon" id="pauseIcon"></div>
+    <div class="statLine">Pause</div>
+    <div class="actions">
+        <button class="actionBtn" id="btnResume"><span id="iconResume"></span>Reprendre</button>
+        <button class="actionBtn secondary" id="btnPauseLobby"><span id="iconHome2"></span>Salon</button>
+    </div>
+</div>
+
+<script src="js/gfx.js?v=8"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<div id="vig"></div><div id="dmgDir"><i></i></div><div id="killMsg"></div><div id="muteBtn" title="Son (M)">🔊</div>
+<script src="js/time.js?v=8"></script>
+<script src="js/version.js?v=8"></script>
+<div id="boot" style="position:fixed;inset:0;z-index:9999;background:#0b0e24;color:#fff;display:flex;align-items:center;justify-content:center;font:bold 20px Arial;letter-spacing:4px">CHARGEMENT DES MODÈLES 3D…</div>
+<script src="js/models-data.js?v=8"></script>
+<script src="js/loader.js?v=8"></script>
+</body>
+</html>

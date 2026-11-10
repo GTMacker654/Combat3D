@@ -4,11 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#060b17">
+<meta name="description" content="Combat 3D : FPS dans le navigateur — solo, vagues, boss, battle royale et multijoueur.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="https://cdn-icons-png.freepik.com/512/15544/15544699.png">
+<link rel="icon" type="image/png" href="Favicon_313.png">
+<link rel="apple-touch-icon" href="Favicon_313.png">
 <title>Combat 3D FPS - Édition Améliorée</title>
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -88,7 +93,31 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 
 <div id="vig"></div><div id="dmgDir"><i></i></div><div id="killMsg"></div><div id="muteBtn" title="Son (M)">🔊</div>
-<div id="boot" style="position:fixed;inset:0;z-index:9999;background:#0b0e24;color:#fff;display:flex;align-items:center;justify-content:center;font:bold 20px Arial;letter-spacing:4px">CHARGEMENT DES MODÈLES 3D…</div>
-<script src="game.js?v=10"></script>
+<div id="boot" role="status" style="position:fixed;inset:0;z-index:9999;background:#0b0e24;color:#fff;display:flex;align-items:center;justify-content:center;font:bold 20px Arial;letter-spacing:4px">CHARGEMENT DES MODÈLES 3D…</div>
+<script>
+/* Écran de chargement : affiche l'erreur (au lieu de rester bloqué) + bouton Réessayer */
+(function(){
+  function fail(msg){
+    var b=document.getElementById("boot"); if(!b) return;
+    b.style.cssText+=";flex-direction:column;gap:16px;text-align:center;padding:24px";
+    b.innerHTML="";
+    var t=document.createElement("div"); t.textContent="ERREUR DE CHARGEMENT"; t.style.color="#ff6b6b";
+    var m=document.createElement("div"); m.textContent=msg; m.style.cssText="font:500 15px Rajdhani,Arial,sans-serif;letter-spacing:1px;max-width:560px;opacity:.85";
+    var r=document.createElement("button"); r.textContent="Réessayer"; r.style.cssText="font:700 16px Rajdhani,Arial,sans-serif;letter-spacing:2px;padding:10px 28px;border:0;border-radius:8px;background:#3b82f6;color:#fff;cursor:pointer";
+    r.onclick=function(){ location.reload(); };
+    b.appendChild(t); b.appendChild(m); b.appendChild(r);
+  }
+  window.c3dBootFail=fail;
+  addEventListener("error",function(e){
+    var el=e.target, s=e.message||"";
+    if(el&&el.tagName==="SCRIPT") fail("Impossible de charger « "+(el.src||"").split("/").slice(-2).join("/")+" ». Vérifie ta connexion puis réessaie.");
+    else if(/THREE|Peer/.test(s)) fail("La bibliothèque 3D n'a pas pu être chargée (connexion coupée ou bloqueur de contenu ?).");
+    else if(s) fail("Erreur : "+s);
+  },true);
+  setTimeout(function(){ fail("Le chargement est très long : connexion lente, ou dossier models/ introuvable."); },30000);
+})();
+</script>
+<noscript><div style="position:fixed;inset:0;z-index:10000;background:#0b0e24;color:#fff;display:flex;align-items:center;justify-content:center;font:bold 18px Arial">Active JavaScript pour jouer à Combat 3D.</div></noscript>
+<script src="game.js?v=11"></script>
 </body>
 </html>

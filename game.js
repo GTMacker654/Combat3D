@@ -1,3 +1,6 @@
+/* Stockage : si localStorage est bloqué (navigation privée, iframe, cookies refusés), on passe en mémoire au lieu de planter le jeu */
+(function(){ try{ localStorage.setItem("__c3d","1"); localStorage.removeItem("__c3d"); }catch(e){ var m={}; try{ Object.defineProperty(window,"localStorage",{configurable:true,value:{getItem:function(k){return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null;},setItem:function(k,v){m[k]=String(v);},removeItem:function(k){delete m[k];},clear:function(){m={};},key:function(i){return Object.keys(m)[i]||null;},get length(){return Object.keys(m).length;}}}); }catch(_){} } })();
+
 window.GFX=(()=>{
  const PRE={min:{n:"Très bas",pr:.6,sh:0,shs:512,aa:0,fx:60,trail:0,dist:50,tone:0,clouds:0,far:0,flash:0},
   low:{n:"Bas",pr:.8,sh:0,shs:512,aa:0,fx:110,trail:0,dist:70,tone:0,clouds:0,far:1,flash:0},
@@ -18,7 +21,7 @@ async function sync(){ try{ const t=performance.now(); const r=await fetch(locat
  try{ const t=performance.now(); const r=await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC",{cache:"no-store"}); const j=await r.json(); base=new Date(j.utc_datetime).getTime()+(performance.now()-t)/2; t0=performance.now(); ok=true; }catch(e){} }
 sync(); setInterval(sync,600000); return {now,set(ms){base=ms;t0=performance.now();ok=true},get ok(){return ok}}; })();
 
-console.log("%cCombat 3D — v9","color:#ffb703;font-weight:bold");
+console.log("%cCombat 3D — v10","color:#ffb703;font-weight:bold");
 
 /* ===== MODÈLES 3D (chargés depuis le dossier models/) ===== */
 /* ===== CHARGEUR DES MODÈLES 3D — fichiers models/*.json (compatibles éditeur three.js) ===== */
@@ -87,7 +90,7 @@ return {load,make,tint,weapon,syncSpec,prop,chest,has:n=>!!T[n],T};
 
 async function demarrer(){
     try{ await C3M.load(); }catch(e){ console.warn(e); }
-    try{ startGame(); }catch(e){ console.error("Erreur au démarrage du jeu :",e); return; }
+    try{ startGame(); }catch(e){ console.error("Erreur au démarrage du jeu :",e); if(window.c3dBootFail) c3dBootFail("Le jeu n'a pas pu démarrer : "+((e&&e.message)||e)); return; }
     const b=document.getElementById("boot"); if(b) b.remove();
 }
 
@@ -4021,6 +4024,71 @@ input[type=range],input[type=checkbox]{accent-color:var(--blue2)}
 }
 `;
 document.head.appendChild(st);
+})();
+
+/* ===== jeu-14 ===== */
+/* ===== v10 : CORRECTIFS (touches coincées, clavier AZERTY, Ctrl+R, pause auto) + PETITES FONCTIONS (hit-marker, vibrations, plein écran, écran allumé) ===== */
+(()=>{
+const solo=()=>!(window.MP&&MP.active);
+const buzz=p=>{ try{ if(isMobile&&navigator.vibrate) navigator.vibrate(p); }catch(e){} };
+
+/* Touches coincées : tout est relâché quand la fenêtre perd le focus ou que l'onglet est caché */
+const release=()=>{ for(const k in keys) keys[k]=false; };
+addEventListener("blur",release);
+document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden) return;
+    release();
+    if(state==="playing"&&!paused&&!gameFinished&&solo()) pauseGame();
+});
+
+/* Armes 1-9 : par position physique de la touche (sur AZERTY, les chiffres demandent Maj) + pavé numérique */
+addEventListener("keydown",e=>{
+    const m=/^(?:Digit|Numpad)([1-9])$/.exec(e.code||"");
+    if(!m||e.repeat||state!=="playing"||paused) return;
+    const k=weaponOrder[m[1]-1];
+    if(!k||(window.G&&G.ok&&!G.ok(k))) return;
+    currentWeapon=weapons[k]; updateWeaponHUD();
+});
+
+/* Ctrl = s'accroupir : on bloque Ctrl+R (recharge la page !), Ctrl+S, Ctrl+D… pendant la partie */
+addEventListener("keydown",e=>{ if(state==="playing"&&e.ctrlKey&&!e.altKey&&/^Key[ADFGHPRSUZ]$/.test(e.code)) e.preventDefault(); },true);
+
+/* Hit-marker : croix blanche quand on touche, rouge + vibration quand on élimine */
+const hm=document.createElement("div"); hm.id="hitMark"; hm.innerHTML="<i></i><i></i><i></i><i></i>"; document.body.appendChild(hm);
+const _dmg=damageEnemy;
+damageEnemy=function(e,d){
+    const u=e&&e.userData, a=!!(u&&u.alive), h=a?u.hp:0;
+    const r=_dmg(e,d);
+    if(a&&u.hp<h){ hm.className=""; void hm.offsetWidth; hm.className=u.alive?"on":"on kill"; buzz(u.alive?12:[18,30,26]); }
+    return r;
+};
+
+/* Vibration quand on perd de la vie + titre de l'onglet « Pause » */
+let hp0=100; const T0=document.title;
+setInterval(()=>{
+    if(typeof playerHP==="number"){ if(playerHP<hp0-.5) buzz(playerHP<=0?[60,40,120]:35); hp0=playerHP; }
+    const t=state==="playing"&&paused?"⏸ Pause — "+T0:T0; if(document.title!==t) document.title=t;
+},120);
+
+/* Écran allumé pendant la partie (mobile) */
+let wl=null;
+const wake=async()=>{
+    try{
+        if(!isMobile||!navigator.wakeLock) return;
+        if(state==="playing"&&!document.hidden&&!wl){ wl=await navigator.wakeLock.request("screen"); wl.addEventListener("release",()=>{ wl=null; }); }
+        else if(state!=="playing"&&wl){ const w=wl; wl=null; await w.release(); }
+    }catch(e){ wl=null; }
+};
+setInterval(wake,4000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) wake(); });
+
+/* Bouton « Plein écran » dans le menu pause (absent sur iPhone, qui ne gère pas l'API) */
+const de=document.documentElement, box=document.querySelector("#pauseMenu .actions");
+if(de.requestFullscreen&&box){
+    const b=document.createElement("button"); b.className="actionBtn secondary"; b.textContent="Plein écran";
+    b.addEventListener("click",()=>{ try{ const p=document.fullscreenElement?document.exitFullscreen():de.requestFullscreen({navigationUI:"hide"}); if(p&&p.catch) p.catch(()=>{}); }catch(e){} });
+    box.appendChild(b);
+}
 })();
 
 }

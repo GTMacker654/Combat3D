@@ -3467,7 +3467,7 @@ const save=()=>{ try{ localStorage.setItem("c3d_v9",JSON.stringify(V9)); }catch(
    2. FOND DU SALON = UNE IMAGE (plus de modèle 3D qui tourne)
    ➜ mets ton image dans le même dossier que index.html et écris son nom ici.
 ========================================================= */
-const LOBBY_BG="lobby.jpg";
+const LOBBY_BG="https://www.shutterstock.com/image-vector/gaming-vector-background-landscape-video-260nw-2308922911.jpg";
 const bg=document.createElement("div"); bg.id="lobbyBg";
 bg.style.backgroundImage='linear-gradient(180deg,rgba(4,8,18,.25),rgba(4,8,18,.7)),url("'+LOBBY_BG+'")';
 document.body.appendChild(bg);

@@ -114,7 +114,7 @@
     else if(/THREE|Peer/.test(s)) fail("La bibliothèque 3D n'a pas pu être chargée (connexion coupée ou bloqueur de contenu ?).");
     else if(s) fail("Erreur : "+s);
   },true);
-  setTimeout(function(){ fail("Le chargement est très long : connexion lente, ou dossier models/ introuvable."); },30000);
+  setTimeout(function(){ var b=document.getElementById("boot"); if(!b||b.children.length) return; b.style.flexDirection="column"; var h=document.createElement("div"); h.style.cssText="font:500 14px Rajdhani,Arial,sans-serif;letter-spacing:1px;opacity:.7;margin-top:14px"; h.textContent="Connexion lente… si rien ne bouge, recharge la page (F5)."; b.appendChild(h); },20000);
 })();
 </script>
 <noscript><div style="position:fixed;inset:0;z-index:10000;background:#0b0e24;color:#fff;display:flex;align-items:center;justify-content:center;font:bold 18px Arial">Active JavaScript pour jouer à Combat 3D.</div></noscript>

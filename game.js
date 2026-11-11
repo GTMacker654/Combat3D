@@ -90,7 +90,7 @@ return {load,make,tint,weapon,syncSpec,prop,chest,has:n=>!!T[n],T};
 
 async function demarrer(){
     try{ await C3M.load(); }catch(e){ console.warn(e); }
-    try{ startGame(); }catch(e){ console.error("Erreur au démarrage du jeu :",e); if(window.c3dBootFail) c3dBootFail("Le jeu n'a pas pu démarrer : "+((e&&e.message)||e)); return; }
+    try{ startGame(); }catch(e){ console.error("Erreur au démarrage du jeu :",e); if(window.c3dBootFail){ const n=Object.keys(C3M.T).length; c3dBootFail((n<5?"Le dossier models/ est introuvable ou vide ("+n+" modèle(s) chargé(s)). "+(location.protocol==="file:"?"Le jeu est ouvert directement depuis le disque : lance-le via un serveur (VS Code « Live Server », python -m http.server…) ou héberge-le en ligne. ":"Vérifie qu'il est bien envoyé à côté de index.html. "):"")+"Détail : "+((e&&e.message)||e)); } return; }
     const b=document.getElementById("boot"); if(b) b.remove();
 }
 
